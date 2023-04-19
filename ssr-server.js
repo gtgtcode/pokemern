@@ -1,7 +1,8 @@
-const express = require("express");
-const next = require("next");
-const dayjs = require("dayjs");
-const { ApolloServer, gql } = require("apollo-server-express");
+import express from "express";
+import next from "next";
+import dayjs from "dayjs";
+import { ApolloServer, gql } from "apollo-server-express";
+import { typeDefs, resolvers } from "./schemas/index.js";
 
 const dev = process.env.NODE_ENV !== "production";
 const app = next({ dev });
@@ -13,17 +14,6 @@ app
     const server = express();
 
     // Set up Apollo Server for GraphQL
-    const typeDefs = gql`
-      type Query {
-        hello: String
-      }
-    `;
-
-    const resolvers = {
-      Query: {
-        hello: () => "Hello, World!",
-      },
-    };
 
     const apolloServer = new ApolloServer({
       typeDefs,
