@@ -17,6 +17,7 @@
     "eslint": "8.38.0",
     "eslint-config-next": "13.3.0",
     "graphql": "^16.6.0",
+    "graphql-yoga": "^3.9.1",
     "mongodb": "^5.3.0",
     "mongoose": "^7.0.4",
     "next": "13.3.0",

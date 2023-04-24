@@ -99,7 +99,7 @@ export default async function handler(req, res) {
       }
     }
 
-    const pokemon = new Pokemon({
+    const pokemon = Pokemon.create({
       name: data.name,
       types: pokeTypes,
       sprites: pokeSprites,
