@@ -23,16 +23,26 @@ const pokemonSchema = new mongoose.Schema({
     required: true,
     default: 0,
   },
+  max_xp: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
   health: {
     type: Number,
     required: true,
   },
-  moveset: {
-    type: [String],
+  max_health: {
+    type: Number,
     required: true,
   },
+  moveset: {
+    type: Object,
+    required: true,
+    maxlength: 4,
+  },
   fullMoveset: {
-    type: [String],
+    type: Object,
     required: true,
   },
   attack: {
