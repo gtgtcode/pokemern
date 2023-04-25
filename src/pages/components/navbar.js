@@ -32,11 +32,14 @@ export default function Navbar() {
             </div>
           )}
         </ul>
-        <img
-          src="pokemern.png"
-          alt="PokeMERN logo"
-          className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 h-[50px]"
-        ></img>
+
+        <Link href="/">
+          <img
+            src="pokemern.png"
+            alt="PokeMERN logo"
+            className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 h-[50px]"
+          />
+        </Link>
       </div>
     </nav>
   );

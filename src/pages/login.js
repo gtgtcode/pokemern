@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { gql, useMutation } from "@apollo/client";
-import Navbar from "./navbar";
+import Navbar from "./components/navbar";
 
 const LOGIN_MUTATION = gql`
   mutation Login($username: String!, $password: String!) {
@@ -66,10 +66,18 @@ export default function Login() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              className="p-2"
             />
           </div>
           {error && <p>Error: {error.message}</p>}
-          <button type="submit">Login</button>
+          <div className="text-center mt-10">
+            <button
+              type="submit"
+              className="p-4 bg-red-600 text-white rounded-full"
+            >
+              Login
+            </button>
+          </div>
         </form>
       </div>
     </div>
