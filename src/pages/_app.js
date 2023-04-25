@@ -4,7 +4,7 @@ import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client";
 const isDevelopment = process.env.NODE_ENV === "development";
 const API_URL = isDevelopment
   ? "http://localhost:3000"
-  : "https://pokemern.vercel.com";
+  : "https://pokemern.vercel.app";
 
 const client = new ApolloClient({
   uri: API_URL + "/api/graphql",
