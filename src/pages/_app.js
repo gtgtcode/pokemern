@@ -1,4 +1,5 @@
 import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client";
+import "../styles/globals.css";
 
 // Set the API URL based on the environment.
 const isDevelopment = process.env.NODE_ENV === "development";

@@ -1,4 +1,6 @@
 const { createYoga, createSchema } = require("graphql-yoga");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 const Pokemon = require("../../models/Pokemon");
 const User = require("../../models/User");
 import { mongoConnection } from "@/utils/connect";
