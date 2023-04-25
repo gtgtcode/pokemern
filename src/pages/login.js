@@ -11,6 +11,7 @@ const LOGIN_MUTATION = gql`
         id
         username
         email
+        pokemon
       }
     }
   }
@@ -34,7 +35,9 @@ export default function Login() {
     try {
       const { data } = await login({ variables: { username, password } });
       localStorage.setItem("token", data.login.token);
+      localStorage.setItem("userId", data.login.user.id);
       console.log("User logged in:", data.login.user);
+
       router.push("/");
     } catch (err) {
       console.error("Error logging in:", err);

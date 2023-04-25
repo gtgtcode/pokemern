@@ -150,11 +150,8 @@ const resolvers = {
     async users() {
       return await User.find({});
     },
-    async userById(parent, args, { currentUser }, info) {
-      if (!currentUser) {
-        throw new Error("Authentication required");
-      }
-      const user = await User.findById(currentUser.id);
+    async userById(parent, args, context, info) {
+      const user = await User.findById(args.id);
       if (!user) {
         throw new Error("User not found");
       }
