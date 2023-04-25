@@ -1,5 +1,4 @@
 const { createYoga, createSchema } = require("graphql-yoga");
-const mongoose = require("mongoose");
 const Pokemon = require("../../models/Pokemon");
 const User = require("../../models/User");
 import { mongoConnection } from "@/utils/connect";

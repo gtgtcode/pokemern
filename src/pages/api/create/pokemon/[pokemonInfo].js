@@ -91,6 +91,7 @@ export default async function handler(req, res) {
           level_learned_at:
             pokeMoves[i].version_group_details[0].level_learned_at,
           max_pp: moveData.pp,
+          current_pp: moveData.pp,
           accuracy: moveData.accuracy,
           power: moveData.power,
           flavor_text: flavorText,

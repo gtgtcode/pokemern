@@ -1,5 +1,23 @@
-import '@/styles/globals.css'
+import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client";
+
+// Set the API URL based on the environment.
+const isDevelopment = process.env.NODE_ENV === "development";
+const API_URL = isDevelopment
+  ? "http://localhost:3000"
+  : "https://pokemern.vercel.com";
+
+const client = new ApolloClient({
+  uri: API_URL + "/api/graphql",
+  cache: new InMemoryCache(),
+});
 
 export default function App({ Component, pageProps }) {
-  return <Component {...pageProps} />
+  return (
+    <ApolloProvider client={client}>
+      <Component {...pageProps} />
+    </ApolloProvider>
+  );
 }
+
+// Export the client instance
+export { client };
