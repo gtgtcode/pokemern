@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { useState, useEffect } from "react";
 
 export default function Navbar() {
@@ -16,23 +17,24 @@ export default function Navbar() {
           {!LoggedIn && (
             <div>
               <li>
-                <a href="/login" className="mr-6">
+                <Link href="/login" className="mr-6">
                   Login
-                </a>
-                <a href="/register">Register</a>
+                </Link>
+                <Link href="/register">Register</Link>
               </li>
             </div>
           )}
           {LoggedIn && (
             <div>
               <li>
-                <a href="/logout">Logout</a>
+                <Link href="/logout">Logout</Link>
               </li>
             </div>
           )}
         </ul>
         <img
           src="pokemern.png"
+          alt="PokeMERN logo"
           className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 h-[50px]"
         ></img>
       </div>
