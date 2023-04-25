@@ -56,7 +56,7 @@ export default function Home() {
     loading: userPokemonLoading,
     error: userPokemonError,
     data: userPokemonData,
-  } = useQuery(USER_POKEMON, { skip: !isAuthenticated });
+  } = useQuery(USER_POKEMON);
 
   useEffect(() => {
     if (userPokemonData) {
