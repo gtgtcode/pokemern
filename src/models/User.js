@@ -35,6 +35,14 @@ const userSchema = new mongoose.Schema({
     type: [String],
     default: [],
   },
+  badges: {
+    type: [String],
+    default: [],
+  },
+  gender: {
+    type: Number,
+    default: 0, // 0 is boy, 1 is girl
+  },
 });
 
 userSchema.pre("save", async function (next) {
