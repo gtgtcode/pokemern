@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { gql, useQuery } from "@apollo/client";
 import Image from "next/image";
+import GameConsole from "./game-console";
+import PlayerHealth from "./player-health";
 
 const USER_INFO = gql`
   query getUserInfo($id: ID!) {
@@ -11,12 +13,17 @@ const USER_INFO = gql`
       pokemon {
         name
         level
+        sprites
+        health
+        xp
+        max_xp
       }
     }
   }
 `;
 
-const TrainerCard = () => {
+const GameScreen = () => {
+  const [gameState, setgameState] = useState(0); // 0 for overworld, 1 for battle
   const [userId, setUserId] = useState(null);
   const [pokemonAmount, setPokemonAmount] = useState(null);
 
@@ -44,37 +51,59 @@ const TrainerCard = () => {
   }, [loading, error, data]);
 
   return (
-    <div className="float-right mr-10 mt-10 min-h-[150px] min-w-[200px] rounded-[40px] bg-gray-200 p-4">
+    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
       {loading ? (
         <p>Loading...</p>
       ) : error ? (
         <p>Error: {error.message}</p>
       ) : (
         <>
-          <h1 id="username" className="pl-6">
-            {data && data.userById && data.userById.username}
-          </h1>
-          <Image
-            src={
-              data && data.userById && data.userById.gender == 0
-                ? "/boy-sprite.png"
-                : "/girl-sprite.png"
-            }
-            alt="Pokemon character sprite"
-            height="100"
-            width="100"
-            className="mx-auto"
-          />
-          <div id="divider" className="my-4 h-[2px] w-full">
-            <div className="h-full w-full bg-gray-300"></div>
+          <div
+            id="game-screen"
+            className="absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 border border-4"
+          >
+            <Image
+              src={gameState == 0 ? "/light-green.jpg" : "/"}
+              alt="Background sprite"
+              height="600"
+              width="600"
+              className="mx-auto h-full w-full"
+            />
+            <Image
+              src={data && data.userById && data.userById.pokemon[0].sprites[0]}
+              alt="Player Pokemon"
+              height="150"
+              width="150"
+              className="absolute bottom-[100px] left-[60px]"
+            />
+            <Image
+              src={data && data.userById && data.userById.pokemon[0].sprites[1]}
+              alt="Enemy Pokemon"
+              height="100"
+              width="100"
+              className="absolute right-[60px] top-[100px]"
+            />
+            {gameState == 0 && (
+              <PlayerHealth
+                name={data && data.userById && data.userById.pokemon[0].name}
+                level={data && data.userById && data.userById.pokemon[0].level}
+                health={
+                  data && data.userById && data.userById.pokemon[0].health
+                }
+                max_xp={
+                  data && data.userById && data.userById.pokemon[0].max_xp
+                }
+                current_xp={
+                  data && data.userById && data.userById.pokemon[0].xp
+                }
+              />
+            )}
+            {gameState == 0 && <GameConsole />}
           </div>
-          <p id="money" className="mt-2 pl-6">
-            ₽ {data && data.userById && data.userById.money}
-          </p>
         </>
       )}
     </div>
   );
 };
 
-export default TrainerCard;
+export default GameScreen;

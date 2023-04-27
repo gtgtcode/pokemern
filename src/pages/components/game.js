@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { gql, useQuery } from "@apollo/client";
 import TrainerCard from "./game-ui/trainer-card";
+import GameScreen from "./game-ui/game-screen";
 
 const USER_POKEMON = gql`
   query getUserPokemon($id: ID!) {
@@ -47,6 +48,7 @@ const Game = () => {
     pokemonAmount > 0 && (
       <div>
         <TrainerCard />
+        <GameScreen />
       </div>
     )
   );
