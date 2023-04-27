@@ -1,20 +1,76 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { useMutation, gql } from "@apollo/client";
+import { useMutation, gql, useQuery } from "@apollo/client";
 
 const CREATE_POKEMON = gql`
   mutation CreatePokemon($pokemon: String!) {
     createPokemon(pokemon: $pokemon) {
       name
-      types
+      sprites
       id
+      types
+      level
+      xp
+      max_xp
+      health
+      max_health
+      attack
+      defense
+      speed
+      moveset {
+        name
+        flavor_text
+        stat_changes {
+          change
+          stat {
+            name
+            url
+          }
+        }
+        type
+        power
+        accuracy
+        current_pp
+        max_pp
+      }
+      fullMoveset {
+        name
+        url
+        level_learned_at
+      }
+    }
+  }
+`;
+
+const UPDATE_USER = gql`
+  mutation updateUser($id: ID!, $pokemon: [PokemonInput]!) {
+    updateUser(id: $id, pokemon: $pokemon) {
+      id
+      username
+      email
+      pokemon {
+        name
+        level
+      }
+      pc
+      money
+      items
+      badges
+      gender
     }
   }
 `;
 
 const PokemonSelection = ({ onNext }) => {
+  const [userId, setUserId] = useState(undefined);
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    setUserId(userId);
+  }, [userId]);
+
   const [PokemonSelected, setPokemonSelected] = useState(undefined);
   const [createPokemon] = useMutation(CREATE_POKEMON);
+  const [updateUser] = useMutation(UPDATE_USER);
 
   const handlePokemonSelection = async (pokemon) => {
     setPokemonSelected(pokemon);
@@ -24,8 +80,31 @@ const PokemonSelection = ({ onNext }) => {
     const result = await createPokemon({
       variables: { pokemon: PokemonSelected },
     });
-    console.log(result);
-    console.log(`Created Pokemon with id ${result.data.createPokemon.id}`);
+    const createdPokemon = result.data.createPokemon;
+
+    console.log(userId);
+    console.log(`Created Pokemon with id ${createdPokemon.id}`);
+
+    delete createdPokemon.__typename;
+
+    for (let i = 0; i < createdPokemon.moveset.length; i++) {
+      delete createdPokemon.moveset[i].__typename;
+      delete createdPokemon.moveset[i].stat_changes[0].__typename;
+      delete createdPokemon.moveset[i].stat_changes[0].stat[0].__typename;
+    }
+
+    for (let i = 0; i < createdPokemon.fullMoveset.length; i++) {
+      delete createdPokemon.fullMoveset[i].__typename;
+    }
+
+    console.log(createdPokemon);
+
+    const user = await updateUser({
+      variables: {
+        id: userId,
+        pokemon: [createdPokemon],
+      },
+    });
     onNext();
   };
 
@@ -44,7 +123,7 @@ const PokemonSelection = ({ onNext }) => {
           }}
           className={
             "rounded-[40px] bg-gray-200 p-4 md:p-8" +
-            (PokemonSelected == 0
+            (PokemonSelected == "bulbasaur"
               ? " outline outline-offset-2 outline-green-500"
               : "")
           }
@@ -52,10 +131,10 @@ const PokemonSelection = ({ onNext }) => {
           <h3 className="text-center">Bulbasaur</h3>
           <div className="container mx-auto mt-4">
             <Image
-              src="/boy-sprite.png"
-              alt="Boy character sprite"
-              height="100"
-              width="100"
+              src="/bulbasaur.gif"
+              alt="Pokemon character sprite"
+              height="60"
+              width="60"
               className="mx-auto"
             />
           </div>
@@ -66,7 +145,7 @@ const PokemonSelection = ({ onNext }) => {
           }}
           className={
             "rounded-[40px] bg-gray-200 p-4 md:p-8" +
-            (PokemonSelected == 1
+            (PokemonSelected == "charmander"
               ? " outline outline-offset-2 outline-red-500"
               : "")
           }
@@ -74,10 +153,10 @@ const PokemonSelection = ({ onNext }) => {
           <h3 className="text-center">Charmander</h3>
           <div className="container mx-auto mt-4">
             <Image
-              src="/girl-sprite.png"
-              alt="Girl character sprite"
-              height="100"
-              width="100"
+              src="/charmander.gif"
+              alt="Pokemon character sprite"
+              height="60"
+              width="60"
               className="mx-auto"
             />
           </div>
@@ -88,7 +167,7 @@ const PokemonSelection = ({ onNext }) => {
           }}
           className={
             "rounded-[40px] bg-gray-200 p-4 md:p-8" +
-            (PokemonSelected == 2
+            (PokemonSelected == "squirtle"
               ? " outline outline-offset-2 outline-blue-500"
               : "")
           }
@@ -96,10 +175,10 @@ const PokemonSelection = ({ onNext }) => {
           <h3 className="text-center">Squirtle</h3>
           <div className="container mx-auto mt-4">
             <Image
-              src="/girl-sprite.png"
-              alt="Girl character sprite"
-              height="100"
-              width="100"
+              src="/squirtle.gif"
+              alt="Pokemon character sprite"
+              height="60"
+              width="60"
               className="mx-auto"
             />
           </div>

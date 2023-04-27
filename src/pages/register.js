@@ -41,6 +41,8 @@ function Register() {
     try {
       const { data } = await register({ variables: formData });
       localStorage.setItem("token", data.register.token);
+      localStorage.setItem("userId", data.register.user.id);
+      console.log(data);
       router.push("/");
     } catch (err) {
       console.error(err);
@@ -50,10 +52,10 @@ function Register() {
   return (
     <div>
       <Navbar />
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-3/5 md:w-1/4 w-3/4 bg-gray-200 rounded-[40px]">
-        <h1 className="text-center my-10 text-2xl">Register</h1>
+      <div className="absolute left-1/2 top-1/2 h-3/5 w-3/4 -translate-x-1/2 -translate-y-1/2 rounded-[40px] bg-gray-200 md:w-1/4">
+        <h1 className="my-10 text-center text-2xl">Register</h1>
         <form onSubmit={handleSubmit}>
-          <div className="text-center mb-6">
+          <div className="mb-6 text-center">
             <label htmlFor="username">Username:</label>
             <br />
             <input
@@ -66,7 +68,7 @@ function Register() {
               required
             />
           </div>
-          <div className="text-center mb-6">
+          <div className="mb-6 text-center">
             <label htmlFor="email">Email:</label>
             <br />
             <input
@@ -93,11 +95,11 @@ function Register() {
             />
           </div>
           {error && <p>Error: {error.message}</p>}
-          <div className="text-center mt-10">
+          <div className="mt-10 text-center">
             <button
               type="submit"
               disabled={loading}
-              className="p-4 bg-red-600 text-white rounded-full"
+              className="rounded-full bg-red-600 p-4 text-white"
             >
               {loading ? "Registering..." : "Register"}
             </button>

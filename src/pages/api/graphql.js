@@ -52,7 +52,8 @@ type Mutation {
         username: String
         email: String
         password: String
-        pokemon: [String]
+        pokemon: [PokemonInput]
+        pc: [String]
         money: Int
         items: [String]
         badges: [String]
@@ -86,18 +87,43 @@ input MoveInput {
   type: String!
   power: Int
   accuracy: Int
-  pp: Int
+  flavor_text: String
+  stat_changes: [StatChangeInput]
+  current_pp: Int
   max_pp: Int
 }
 
+input StatChangeInput {
+    change: Int
+    stat: [StatValueInput]
+  }
+
+  input StatValueInput {
+    name: String
+    url: String
+  }
+
 type Move {
   name: String!
-  type: String!
+  type: String
+  flavor_text: String
+  stat_changes: [StatChange]
   power: Int
   accuracy: Int
   current_pp: Int
   max_pp: Int
 }
+
+type StatChange {
+    change: Int
+    stat: [StatValue]
+  }
+
+  
+type StatValue {
+    name: String
+    url: String
+  }
 
 input FullMoveInput {
     name: String!
@@ -109,6 +135,23 @@ input FullMoveInput {
     name: String!
     url: String!
     level_learned_at: Int
+  }
+
+  input PokemonInput {
+    id: ID!
+    name: String!
+    types: [String]!
+    sprites: [String]!
+    level: Int!
+    xp: Int!
+    max_xp: Int!
+    health: Int!
+    max_health: Int!
+    moveset: [MoveInput]!
+    fullMoveset: [FullMoveInput]!
+    attack: Int!
+    defense: Int!
+    speed: Int!
   }
 
 type Pokemon {
@@ -126,8 +169,6 @@ type Pokemon {
   attack: Int!
   defense: Int!
   speed: Int!
-  createdAt: Date!
-  updatedAt: Date!
 }
 
 type Moveset {
@@ -139,9 +180,10 @@ type User {
   username: String!
   email: String!
   createdAt: Date!
-  pokemon: [String]!
+  pokemon: [Pokemon]!
   money: Int!
   items: [String]!
+  pc: [String]!
   badges: [String]!
   gender: Int!
 }
@@ -240,14 +282,38 @@ const resolvers = {
             }
 
             let statChangesArr = [];
+            console.log(moveData.stat_changes.length);
+            if (moveData.stat_changes.length == 0) {
+              console.log("EMPTY");
+              let emptyStatChange = {
+                change: 0,
+                stat: [
+                  {
+                    name: "a",
+                    url: "a",
+                  },
+                ],
+              };
+              statChangesArr.push(emptyStatChange);
+            }
             for (let k = 0; k < moveData.stat_changes.length; k++) {
-              let statChangeObj = {
-                change: moveData.stat_changes[k].change,
+              moveData.stat_changes[k] = {
+                change: moveData.stat_changes[k].change || 0,
                 stat: {
-                  name: moveData.stat_changes[k].stat.name,
-                  url: moveData.stat_changes[k].stat.url,
+                  name: moveData.stat_changes[k].stat.name || "a",
+                  url: moveData.stat_changes[k].stat.url || "a",
                 },
               };
+              let statChangeObj = {
+                change: moveData.stat_changes[k].change || 0,
+                stat: [
+                  {
+                    name: moveData.stat_changes[k].stat.name || "a",
+                    url: moveData.stat_changes[k].stat.url || "a",
+                  },
+                ],
+              };
+
               statChangesArr.push(statChangeObj);
             }
 
@@ -262,6 +328,7 @@ const resolvers = {
               power: moveData.power,
               flavor_text: flavorText,
               stat_changes: statChangesArr,
+              type: moveData.type.name,
             };
           }
         }
@@ -281,7 +348,6 @@ const resolvers = {
           defense: data.stats[2].base_stat,
           speed: data.stats[5].base_stat,
         });
-        console.log(pokemon);
         await pokemon.save();
         return pokemon;
       } catch (err) {
@@ -322,12 +388,13 @@ const resolvers = {
       return { token, user };
     },
     async updateUser(parent, args, context, info) {
-      const { id, password, ...updates } = args;
-      if (password) {
-        updates.password = await bcrypt.hash(password, 10);
-      }
+      const { id, ...updates } = args;
       const options = { new: true };
-      return await User.findByIdAndUpdate(id, updates, options);
+      return await User.findByIdAndUpdate(
+        id,
+        { $set: { ...updates } },
+        options
+      );
     },
   },
   Pokemon: {

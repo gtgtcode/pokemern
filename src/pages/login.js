@@ -11,7 +11,10 @@ const LOGIN_MUTATION = gql`
         id
         username
         email
-        pokemon
+        pokemon {
+          name
+          level
+        }
       }
     }
   }
@@ -47,10 +50,10 @@ export default function Login() {
   return (
     <div>
       <Navbar />
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-1/2 md:w-1/4 w-3/4 bg-gray-200 rounded-[40px]">
-        <h1 className="text-center my-10 text-2xl">Login</h1>
+      <div className="absolute left-1/2 top-1/2 h-1/2 w-3/4 -translate-x-1/2 -translate-y-1/2 rounded-[40px] bg-gray-200 md:w-1/4">
+        <h1 className="my-10 text-center text-2xl">Login</h1>
         <form onSubmit={handleSubmit}>
-          <div className="text-center mb-6">
+          <div className="mb-6 text-center">
             <label htmlFor="username">Username:</label>
             <br />
             <input
@@ -73,10 +76,10 @@ export default function Login() {
             />
           </div>
           {error && <p>Error: {error.message}</p>}
-          <div className="text-center mt-10">
+          <div className="mt-10 text-center">
             <button
               type="submit"
-              className="p-4 bg-red-600 text-white rounded-full"
+              className="rounded-full bg-red-600 p-4 text-white"
             >
               Login
             </button>

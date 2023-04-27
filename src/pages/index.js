@@ -8,6 +8,7 @@ import Login from "./login";
 import Register from "./register";
 import Navbar from "./components/navbar";
 import CreateCharacter from "./components/createCharacter";
+import Game from "./components/game";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,6 +25,7 @@ export default function Home() {
     <main>
       <Navbar />
       <CreateCharacter />
+      <Game />
     </main>
   );
 }

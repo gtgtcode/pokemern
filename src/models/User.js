@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
     get: (value) => dayjs(value).format("MM/DD/YY hh:mma"),
   },
   pokemon: {
-    type: [String],
+    type: Object,
     default: [],
   },
   money: {
@@ -37,6 +37,10 @@ const userSchema = new mongoose.Schema({
   },
   badges: {
     type: [String],
+    default: [],
+  },
+  pc: {
+    type: Object,
     default: [],
   },
   gender: {
