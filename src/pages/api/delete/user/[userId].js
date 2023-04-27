@@ -1,6 +1,6 @@
 import { mongoConnection } from "@/utils/connect";
 
-const User = require("../../../models/User");
+const User = require("../../../../models/User");
 
 export default async function handler(req, res) {
   const { userId } = req.query;
