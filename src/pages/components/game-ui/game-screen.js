@@ -17,8 +17,24 @@ const USER_INFO = gql`
         level
         sprites
         health
+        speed
         xp
         max_xp
+        moveset {
+          name
+          power
+          flavor_text
+          accuracy
+          type
+          max_pp
+          stat_changes {
+            change
+            stat {
+              name
+              url
+            }
+          }
+        }
       }
     }
   }
@@ -72,6 +88,8 @@ const GameScreen = () => {
   const [EnemyHealth, setEnemyHealth] = useState(undefined);
   const [EnemyPokemon, setEnemyPokemon] = useState(undefined);
 
+  var initialized = false;
+
   const { loading, error, data } = useQuery(USER_INFO, {
     variables: { id: userId },
     skip: !userId, // Skip the query if userId is not set
@@ -84,6 +102,7 @@ const GameScreen = () => {
       ).toString()}/`
     );
     async function initializeEnemyPokemon() {
+      initialized = false;
       setEnemyPokemon("a");
       const gen1NonEvolutions = [
         "bulbasaur",
@@ -108,7 +127,7 @@ const GameScreen = () => {
         "ponyta",
         "slowpoke",
         "magnemite",
-        "farfetch'd",
+        "farfetchd",
         "doduo",
         "seel",
         "grimer",
@@ -128,7 +147,6 @@ const GameScreen = () => {
         "horsea",
         "goldeen",
         "staryu",
-        "mr. mime",
         "scyther",
         "jynx",
         "electabuzz",
@@ -148,7 +166,7 @@ const GameScreen = () => {
       console.log(gen1NonEvolutions.length);
       const randomPokemon = await axios.get(
         `https://pokeapi.co/api/v2/pokemon/${
-          gen1NonEvolutions[Math.floor(Math.random() * 59)]
+          gen1NonEvolutions[Math.floor(Math.random() * 58)]
         }/`
       );
       console.log(randomPokemon);
@@ -195,6 +213,7 @@ const GameScreen = () => {
             id="game-screen"
             className="absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 overflow-hidden border border-4"
           >
+            <audio src="/battle.mp3" autoPlay loop></audio>
             <Image
               src={gameState == 0 ? "/battle-background.png" : "/"}
               alt="Background sprite"
@@ -248,10 +267,19 @@ const GameScreen = () => {
                 name={EnemyPokemon && EnemyPokemon.name}
                 level={EnemyPokemon && EnemyPokemon.level}
                 health={EnemyPokemon && EnemyPokemon.health}
-                currentHealth={EnemyHealth}
               />
             )}
-            {gameState == 0 && <GameConsole />}
+            {gameState == 0 && (
+              <GameConsole
+                pokemonName={
+                  data && data.userById && data.userById.pokemon[0].name
+                }
+                pokemonMoves={
+                  data && data.userById && data.userById.pokemon[0].moveset
+                }
+                enemyMoves={EnemyPokemon && EnemyPokemon.moveset}
+              />
+            )}
           </div>
         </>
       )}

@@ -1,12 +1,15 @@
 import React from "react";
 import Image from "next/image";
+import BattleMenu from "./console/battle-menu";
 
-const GameConsole = () => {
+const GameConsole = (props) => {
   return (
     <div className="absolute bottom-0 grid h-[150px] w-full grid-cols-2 overflow-hidden bg-gray-200">
-      <div className="relative left-1/2 top-1/2 h-[95%] w-[95%] -translate-x-1/2 -translate-y-1/2 bg-orange-600">
+      <div className="relative left-1/2 top-1/2 h-[95%] w-[95%] -translate-x-1/2 -translate-y-1/2 bg-gray-600">
         <div className="absolute left-1/2 top-1/2 h-[94%] w-[98%] -translate-x-1/2 -translate-y-1/2 bg-white">
-          <div className="absolute left-1/2 top-1/2 h-[96%] w-[98%] -translate-x-1/2 -translate-y-1/2 bg-sky-600"></div>
+          <div className="absolute left-1/2 top-1/2 h-[96%] w-[98%] -translate-x-1/2 -translate-y-1/2 border border-black bg-white p-6 text-xl font-bold text-gray-600">
+            WHAT WILL {props.pokemonName && props.pokemonName.toUpperCase()} DO?
+          </div>
         </div>
       </div>
       <div>
@@ -17,7 +20,12 @@ const GameConsole = () => {
           height={600}
           width={600}
         />
-        <div className="relative left-1/2 top-1/2 h-[95%] w-[95%] -translate-x-1/2 -translate-y-1/2 bg-white"></div>
+        <div className="relative left-1/2 top-1/2 h-[95%] w-[95%] -translate-x-1/2 -translate-y-1/2 bg-white">
+          <BattleMenu
+            pokemonMoves={props.pokemonMoves}
+            enemyMoves={props.enemyMoves}
+          />
+        </div>
       </div>
     </div>
   );
