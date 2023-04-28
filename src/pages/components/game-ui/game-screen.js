@@ -3,6 +3,7 @@ import { gql, useQuery, useMutation } from "@apollo/client";
 import Image from "next/image";
 import GameConsole from "./game-console";
 import PlayerHealth from "./player-health";
+import EnemyHealthBar from "./enemy-health";
 import axios from "axios";
 
 const USER_INFO = gql`
@@ -76,23 +77,93 @@ const GameScreen = () => {
     skip: !userId, // Skip the query if userId is not set
   });
 
-  async function createEnemyPokemon() {
-    let pokeId = await axios.get(
-      `https://pokeapi.co/api/v2/pokemon/${Math.floor(Math.random() * 152)}/`
+  useEffect(() => {
+    console.log(
+      `https://pokeapi.co/api/v2/pokemon/${Math.floor(
+        Math.random() * 152
+      ).toString()}/`
     );
-    let data = pokeId.data;
-    console.log(data);
-    setEnemyPokemon(
-      await createEnemy({
-        variables: { pokemon: `${data.name}` },
-      })
-    );
-    console.log(EnemyPokemon);
-  }
+    async function initializeEnemyPokemon() {
+      setEnemyPokemon("a");
+      const gen1NonEvolutions = [
+        "bulbasaur",
+        "charmander",
+        "squirtle",
+        "pikachu",
+        "clefairy",
+        "vulpix",
+        "jigglypuff",
+        "zubat",
+        "geodude",
+        "paras",
+        "diglett",
+        "meowth",
+        "psyduck",
+        "mankey",
+        "poliwag",
+        "abra",
+        "machop",
+        "bellsprout",
+        "tentacool",
+        "ponyta",
+        "slowpoke",
+        "magnemite",
+        "farfetch'd",
+        "doduo",
+        "seel",
+        "grimer",
+        "shellder",
+        "gastly",
+        "onix",
+        "drowzee",
+        "krabby",
+        "voltorb",
+        "exeggcute",
+        "cubone",
+        "koffing",
+        "rhyhorn",
+        "chansey",
+        "tangela",
+        "kangaskhan",
+        "horsea",
+        "goldeen",
+        "staryu",
+        "mr. mime",
+        "scyther",
+        "jynx",
+        "electabuzz",
+        "magmar",
+        "pinsir",
+        "tauros",
+        "magikarp",
+        "lapras",
+        "ditto",
+        "eevee",
+        "porygon",
+        "omanyte",
+        "kabuto",
+        "snorlax",
+        "dratini",
+      ];
+      console.log(gen1NonEvolutions.length);
+      const randomPokemon = await axios.get(
+        `https://pokeapi.co/api/v2/pokemon/${
+          gen1NonEvolutions[Math.floor(Math.random() * 59)]
+        }/`
+      );
+      console.log(randomPokemon);
+      const newEnemyPokemon = await createEnemy({
+        variables: { pokemon: randomPokemon.data.name },
+      });
+      setEnemyPokemon(newEnemyPokemon.data.createPokemon);
+    }
 
-  if (EnemyPokemon == undefined) {
-    createEnemyPokemon();
-  }
+    if (EnemyPokemon === undefined) {
+      initializeEnemyPokemon();
+    }
+  }, [createEnemy, EnemyPokemon]);
+
+  console.log(EnemyPokemon);
 
   useEffect(() => {
     setUserId(localStorage.getItem("userId"));
@@ -122,28 +193,40 @@ const GameScreen = () => {
         <>
           <div
             id="game-screen"
-            className="absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 border border-4"
+            className="absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 overflow-hidden border border-4"
           >
             <Image
-              src={gameState == 0 ? "/light-green.jpg" : "/"}
+              src={gameState == 0 ? "/battle-background.png" : "/"}
               alt="Background sprite"
               height="600"
               width="600"
               className="mx-auto h-full w-full"
             />
             <Image
-              src={data && data.userById && data.userById.pokemon[0].sprites[0]}
-              alt="Player Pokemon"
-              height="150"
-              width="150"
-              className="absolute bottom-[100px] left-[60px]"
+              src={gameState == 0 ? "/grass.png" : "/"}
+              alt="Grass sprite"
+              height="600"
+              width="800"
+              className="absolute right-20 top-3 mx-auto h-full w-full scale-[1.2]"
             />
             <Image
-              src={data && data.userById && data.userById.pokemon[0].sprites[1]}
+              src={gameState == 0 ? "/player-bg.png" : "/"}
+              alt="Grass sprite"
+              height="600"
+              width="800"
+              className="absolute -top-10 left-0 mx-auto h-full w-full"
+            />
+            <img
+              src={data && data.userById && data.userById.pokemon[0].sprites[0]}
+              alt="Player Pokemon"
+              className="absolute bottom-[150px] left-[100px] scale-[4]"
+            />
+            <img
+              src={
+                EnemyPokemon && EnemyPokemon.sprites && EnemyPokemon.sprites[1]
+              }
               alt="Enemy Pokemon"
-              height="100"
-              width="100"
-              className="absolute right-[60px] top-[100px]"
+              className="absolute right-[160px] top-[235px] origin-bottom scale-[3] text-center"
             />
             {gameState == 0 && (
               <PlayerHealth
@@ -158,6 +241,14 @@ const GameScreen = () => {
                 current_xp={
                   data && data.userById && data.userById.pokemon[0].xp
                 }
+              />
+            )}
+            {gameState == 0 && (
+              <EnemyHealthBar
+                name={EnemyPokemon && EnemyPokemon.name}
+                level={EnemyPokemon && EnemyPokemon.level}
+                health={EnemyPokemon && EnemyPokemon.health}
+                currentHealth={EnemyHealth}
               />
             )}
             {gameState == 0 && <GameConsole />}

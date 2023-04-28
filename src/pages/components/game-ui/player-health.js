@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const PlayerHealth = (props) => {
+const PlayerHealthBar = (props) => {
   const [currentHealth, setcurrentHealth] = useState(props.health);
   return (
     <div className="absolute bottom-[200px] right-0 h-[90px] w-[250px] rounded-tl-[80px] bg-gray-200 p-4 pl-10">
@@ -52,4 +52,4 @@ const PlayerHealth = (props) => {
   );
 };
 
-export default PlayerHealth;
+export default PlayerHealthBar;
