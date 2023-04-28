@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useQuery, useMutation } from "@apollo/client";
 import Image from "next/image";
 import GameConsole from "./game-console";
 import PlayerHealth from "./player-health";
+import axios from "axios";
 
 const USER_INFO = gql`
   query getUserInfo($id: ID!) {
@@ -22,15 +23,76 @@ const USER_INFO = gql`
   }
 `;
 
+const CREATE_ENEMY = gql`
+  mutation CreatePokemon($pokemon: String!) {
+    createPokemon(pokemon: $pokemon) {
+      name
+      sprites
+      id
+      types
+      level
+      xp
+      max_xp
+      health
+      max_health
+      attack
+      defense
+      speed
+      moveset {
+        name
+        flavor_text
+        stat_changes {
+          change
+          stat {
+            name
+            url
+          }
+        }
+        type
+        power
+        accuracy
+        current_pp
+        max_pp
+      }
+      fullMoveset {
+        name
+        url
+        level_learned_at
+      }
+    }
+  }
+`;
+
 const GameScreen = () => {
   const [gameState, setgameState] = useState(0); // 0 for overworld, 1 for battle
   const [userId, setUserId] = useState(null);
   const [pokemonAmount, setPokemonAmount] = useState(null);
+  const [createEnemy] = useMutation(CREATE_ENEMY);
+  const [EnemyHealth, setEnemyHealth] = useState(undefined);
+  const [EnemyPokemon, setEnemyPokemon] = useState(undefined);
 
   const { loading, error, data } = useQuery(USER_INFO, {
     variables: { id: userId },
     skip: !userId, // Skip the query if userId is not set
   });
+
+  async function createEnemyPokemon() {
+    let pokeId = await axios.get(
+      `https://pokeapi.co/api/v2/pokemon/${Math.floor(Math.random() * 152)}/`
+    );
+    let data = pokeId.data;
+    console.log(data);
+    setEnemyPokemon(
+      await createEnemy({
+        variables: { pokemon: `${data.name}` },
+      })
+    );
+    console.log(EnemyPokemon);
+  }
+
+  if (EnemyPokemon == undefined) {
+    createEnemyPokemon();
+  }
 
   useEffect(() => {
     setUserId(localStorage.getItem("userId"));

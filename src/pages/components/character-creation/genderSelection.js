@@ -15,6 +15,9 @@ const GenderSelection = ({ onNext }) => {
   const [CharacterSelected, setCharacterSelected] = useState(undefined);
   const [updateUser] = useMutation(UPDATE_USER);
   const [userId, setUserId] = useState(null);
+  let enemyPokemon = undefined;
+
+  async function createEnemyPokemon() {}
 
   useEffect(() => {
     const storedUserId = localStorage.getItem("userId");

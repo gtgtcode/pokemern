@@ -52,8 +52,8 @@ function Register() {
   return (
     <div>
       <Navbar />
-      <div className="absolute left-1/2 top-1/2 h-3/5 w-3/4 -translate-x-1/2 -translate-y-1/2 rounded-[40px] bg-gray-200 md:w-1/4">
-        <h1 className="my-10 text-center text-2xl">Register</h1>
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[40px] bg-gray-200 p-10 md:w-1/4">
+        <h1 className="mb-10 text-center text-2xl">Register</h1>
         <form onSubmit={handleSubmit}>
           <div className="mb-6 text-center">
             <label htmlFor="username">Username:</label>
