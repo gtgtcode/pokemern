@@ -2,6 +2,16 @@
 
 PokeMERN is a Pokemon battle simulator made using NextJS and the PokeAPI.
 
+## Technologies Used
+
+* NextJS (for front-end and server components)
+* Tailwind CSS (styling)
+* Mongoose (for model creation)
+* MongoDB (MongoDB Atlas for database storage)
+* GraphQL (schema parsing, using GraphQL Luna)
+* PokéAPI (API used to create Pokémon)
+* Vercel (deployment)
+
 ## Getting Started
 
 Go to the deployed site at https://pokemern.vercel.app/. Sign up for a new account with a username, email, and password. Select your gender, and then select your starter Pokemon.
