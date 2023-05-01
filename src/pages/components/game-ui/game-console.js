@@ -28,6 +28,11 @@ const GameConsole = (props) => {
             enemyMoves={props.enemyMoves}
             handleAttack={props.handleAttack}
             Announcer={props.Announcer}
+            userData={props.userData}
+            handleUpdateItems={props.handleUpdateItems}
+            health={props.health}
+            currentHealth={props.currentHealth}
+            setCurrentHealth={props.setCurrentHealth}
           />
         </div>
       </div>

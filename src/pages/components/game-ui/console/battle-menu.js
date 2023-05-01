@@ -1,8 +1,10 @@
+import { useMutation, useQuery, gql } from "@apollo/client";
 import React, { useState } from "react";
 
 const BattleMenu = (props, { handleAttack }) => {
   const [BattleMenuState, setBattleMenuState] = useState("overview");
   const [MoveHover, setMoveHover] = useState(undefined);
+
   console.log(props.pokemonMoves);
   return (
     <div className="relative h-full w-full">
@@ -16,7 +18,12 @@ const BattleMenu = (props, { handleAttack }) => {
           >
             FIGHT
           </button>
-          <button className="mr-4 rounded-full border-2 border-white bg-orange-400 p-2 text-center text-xl font-bold text-white outline outline-2 outline-offset-2 outline-gray-800 hover:bg-orange-700 hover:outline-orange-700">
+          <button
+            onClick={() => {
+              setBattleMenuState("item-menu");
+            }}
+            className="mr-4 rounded-full border-2 border-white bg-orange-400 p-2 text-center text-xl font-bold text-white outline outline-2 outline-offset-2 outline-gray-800 hover:bg-orange-700 hover:outline-orange-700"
+          >
             ITEM
           </button>
           <button className="ml-4 rounded-full border-2 border-white bg-green-400 p-2 text-center text-xl font-bold text-white outline outline-2 outline-offset-2 outline-gray-800 hover:bg-green-700 hover:outline-green-700">
@@ -112,6 +119,84 @@ const BattleMenu = (props, { handleAttack }) => {
                 Type: {MoveHover.type.toUpperCase()}
               </div>
             )}
+            <button
+              onClick={() => {
+                setBattleMenuState("overview");
+              }}
+              className="absolute right-[2px] top-[2px] rounded-bl-[40px] border-b-2 border-l-2 border-gray-600 bg-white p-2 pl-8 pr-4"
+            >
+              {"<-"} BACK
+            </button>
+          </div>
+        </div>
+      )}
+      {BattleMenuState == "item-menu" && (
+        <div className="bg-white-500 absolute -left-[105%] grid h-[140px] w-[205%] grid-cols-2">
+          <div className="relative grid grid-cols-2 grid-rows-2 border-y-2 border-l-2 border-gray-600 bg-white">
+            <div className="relative top-1/2 -translate-y-1/2 p-[15%] text-center">
+              <button
+                onClick={() => {
+                  setBattleMenuState("overview");
+                  if (props.userData.items.length > 0) {
+                    const newMoney = props.userData.money;
+                    const newItems = props.userData.items.slice(0, -1);
+                    props.handleUpdateItems(
+                      props.userData.id,
+                      newMoney,
+                      newItems
+                    );
+                    props.setCurrentHealth(props.health);
+                  }
+                }}
+              >
+                Potion x{props.userData.items.length}
+              </button>
+            </div>
+            <div className="relative top-1/2 -translate-y-1/2 p-[15%] text-center"></div>
+          </div>
+          <div className="border-y-2 border-r-2 border-gray-600 bg-white">
+            <div className="mt-10 text-center">
+              You can buy potions here!
+              <button
+                className="mr-2 mt-2 rounded-full border border-2 p-2"
+                onClick={async () => {
+                  if (props.userData.money >= 40) {
+                    const newMoney = props.userData.money - 40;
+                    const newItems = [...props.userData.items, "potion"];
+                    props.handleUpdateItems(
+                      props.userData.id,
+                      newMoney,
+                      newItems
+                    );
+                  }
+                }}
+              >
+                1x Potion - ₽40
+              </button>
+              <button
+                className="rounded-full border border-2 p-2"
+                onClick={async () => {
+                  if (props.userData.money >= 160) {
+                    const newMoney = props.userData.money - 160;
+                    const newItems = [
+                      ...props.userData.items,
+                      "potion",
+                      "potion",
+                      "potion",
+                      "potion",
+                      "potion",
+                    ];
+                    props.handleUpdateItems(
+                      props.userData.id,
+                      newMoney,
+                      newItems
+                    );
+                  }
+                }}
+              >
+                5x Potion - ₽160
+              </button>
+            </div>
             <button
               onClick={() => {
                 setBattleMenuState("overview");

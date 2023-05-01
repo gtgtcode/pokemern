@@ -43,8 +43,8 @@ const CREATE_POKEMON = gql`
 `;
 
 const UPDATE_USER = gql`
-  mutation updateUser($id: ID!, $pokemon: [PokemonInput]!) {
-    updateUser(id: $id, pokemon: $pokemon) {
+  mutation updateUser($id: ID!, $pokemon: [PokemonInput]!, $items: [String]!) {
+    updateUser(id: $id, pokemon: $pokemon, items: $items) {
       id
       username
       email

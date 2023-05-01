@@ -12,6 +12,7 @@ const USER_INFO = gql`
       id
       username
       money
+      items
       pokemon {
         attack
         defense
@@ -101,6 +102,15 @@ const UPDATE_POKEMON = gql`
   }
 `;
 
+const UPDATE_ITEMS = gql`
+  mutation updateItems($id: ID!, $items: [String]!, $money: Int!) {
+    updateUser(id: $id, items: $items, money: $money) {
+      items
+      money
+    }
+  }
+`;
+
 const GameScreen = () => {
   const [gameState, setgameState] = useState(0); // 0 for overworld, 1 for battle
   const [userId, setUserId] = useState(null);
@@ -108,6 +118,7 @@ const GameScreen = () => {
   const [createEnemy] = useMutation(CREATE_ENEMY);
   const [updateUser] = useMutation(UPDATE_USER);
   const [updatePokemon] = useMutation(UPDATE_POKEMON);
+  const [updateItems] = useMutation(UPDATE_ITEMS);
   const [EnemyHealth, setEnemyHealth] = useState(undefined);
   const [EnemyAttack, setEnemyAttack] = useState(undefined);
   const [EnemyDefense, setEnemyDefense] = useState(undefined);
@@ -117,6 +128,7 @@ const GameScreen = () => {
   const [currentDefense, setCurrentDefense] = useState(undefined);
   const [isPokemonDead, setIsPokemonDead] = useState(false);
   const [Announcer, setAnnouncer] = useState(undefined);
+  const [refetchUserData, setRefetchUserData] = useState(null);
 
   let enemyMoveUsed = undefined;
 
@@ -124,6 +136,17 @@ const GameScreen = () => {
     const userId = localStorage.getItem("userId");
     setUserId(userId);
   }, [userId]);
+
+  const handleUpdateItems = async (id, money, items) => {
+    const user = await updateItems({
+      variables: {
+        id: id,
+        money: money,
+        items: items,
+      },
+    });
+    refetch();
+  };
 
   const handleAttack = async (
     playerHealth,
@@ -249,10 +272,14 @@ const GameScreen = () => {
 
   var initialized = false;
 
-  const { loading, error, data } = useQuery(USER_INFO, {
+  const { loading, error, data, refetch } = useQuery(USER_INFO, {
     variables: { id: userId },
     skip: !userId, // Skip the query if userId is not set
   });
+
+  useEffect(() => {
+    setRefetchUserData(refetch);
+  }, [refetch]);
 
   if (!loading && currentHealth <= 0) {
     setIsPokemonDead(true);
@@ -413,13 +440,17 @@ const GameScreen = () => {
               alt="Player Pokemon"
               className="absolute bottom-[150px] left-[100px] scale-[4]"
             />
-            <img
-              src={
-                EnemyPokemon && EnemyPokemon.sprites && EnemyPokemon.sprites[1]
-              }
-              alt="Enemy Pokemon"
-              className="absolute right-[160px] top-[235px] origin-bottom scale-[3] text-center"
-            />
+            {EnemyPokemon && EnemyPokemon.sprites !== undefined && (
+              <img
+                src={
+                  EnemyPokemon &&
+                  EnemyPokemon.sprites &&
+                  EnemyPokemon.sprites[1]
+                }
+                alt="Enemy Pokemon"
+                className="absolute right-[160px] top-[235px] origin-bottom scale-[3] text-center"
+              />
+            )}
 
             {gameState == 0 && (
               <PlayerHealth
@@ -470,6 +501,13 @@ const GameScreen = () => {
                 enemyData={EnemyPokemon}
                 handleAttack={handleAttack}
                 Announcer={Announcer}
+                userData={data && data.userById}
+                handleUpdateItems={handleUpdateItems}
+                health={
+                  data && data.userById && data.userById.pokemon[0].health
+                }
+                currentHealth={currentHealth}
+                setCurrentHealth={setCurrentHealth}
               />
             )}
           </div>
