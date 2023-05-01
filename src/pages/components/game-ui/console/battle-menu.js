@@ -67,9 +67,11 @@ const BattleMenu = (props, { handleAttack }) => {
                 onClick={() => {
                   props.handleAttack(
                     props.pokemonData.health,
-                    props.enemyData,
+                    props.enemyData.health,
                     props.pokemonData.moveset[1],
-                    props.enemyData.moveset
+                    props.enemyData.moveset,
+                    props.pokemonData,
+                    props.enemyData
                   );
                   setBattleMenuState("overview");
                 }}

@@ -115,6 +115,10 @@ const GameScreen = () => {
   const [currentHealth, setCurrentHealth] = useState(undefined);
   const [currentAttack, setCurrentAttack] = useState(undefined);
   const [currentDefense, setCurrentDefense] = useState(undefined);
+  const [isPokemonDead, setIsPokemonDead] = useState(false);
+  const [Announcer, setAnnouncer] = useState(undefined);
+
+  let enemyMoveUsed = undefined;
 
   useEffect(() => {
     const userId = localStorage.getItem("userId");
@@ -139,11 +143,10 @@ const GameScreen = () => {
     async function playerAttack() {
       const newEnemyHealth =
         EnemyHealth -
-        Math.floor(
-          moveUsed.power / 3 + pokemonData.attack / pokemonData.defense
-        );
+        Math.floor(moveUsed.power / 3 + currentAttack / currentDefense);
       setEnemyHealth(newEnemyHealth);
-      console.log(newEnemyHealth);
+      console.log("enemattack: " + EnemyAttack);
+      console.log("enemattack: " + EnemyDefense);
 
       if (moveUsed.stat_changes[0].change !== 0) {
         if (moveUsed.stat_changes[0].name == "attack") {
@@ -177,17 +180,24 @@ const GameScreen = () => {
     }
 
     function enemyAttack() {
-      const enemyMoveUsed = enemyMoveset[Math.floor(Math.random() * 2)];
+      console.log(
+        EnemyPokemon.moveset[
+          Math.floor(Math.random() * EnemyPokemon.moveset.length)
+        ]
+      );
+      enemyMoveUsed =
+        EnemyPokemon.moveset[
+          Math.floor(Math.random() * EnemyPokemon.moveset.length)
+        ];
+      console.log("move" + enemyMoveUsed);
       const newPlayerHealth =
         currentHealth -
-        Math.floor(
-          enemyMoveUsed.power / 3 + enemyData.attack / enemyData.defense
-        );
+        Math.floor(enemyMoveUsed.power / 3 + EnemyAttack / EnemyDefense);
       setCurrentHealth(newPlayerHealth);
       console.log(newPlayerHealth);
 
       if (enemyMoveUsed.stat_changes[0].change !== 0) {
-        if (moveUsed.stat_changes[0].name == "attack") {
+        if (enemyMoveUsed.stat_changes[0].name == "attack") {
           const newPokemonAttack =
             currentAttack + moveUsed.stat_changes[0].change;
           setCurrentAttack(newPokemonAttack);
@@ -201,11 +211,39 @@ const GameScreen = () => {
     }
 
     if (pokemonData && pokemonData.speed > enemyData.speed) {
+      setAnnouncer(
+        `${pokemonData.name.toUpperCase()} used ${moveUsed.name.toUpperCase()}!`
+      );
       playerAttack();
+      if (enemyHealth >= 0) {
+        setTimeout(() => {
+          enemyAttack();
+          setAnnouncer(
+            `${EnemyPokemon.name.toUpperCase()} used ${enemyMoveUsed.name.toUpperCase()}!`
+          );
+        }, 1000);
+      }
+      setTimeout(() => {
+        setAnnouncer(undefined);
+      }, 2000);
+    }
+
+    if (pokemonData && pokemonData.speed < enemyData.speed) {
       enemyAttack();
-    } else {
-      enemyAttack();
-      playerAttack();
+      setAnnouncer(
+        `${EnemyPokemon.name.toUpperCase()} used ${enemyMoveUsed.name.toUpperCase()}!`
+      );
+      if (currentHealth >= 0) {
+        setTimeout(() => {
+          setAnnouncer(
+            `${pokemonData.name.toUpperCase()} used ${moveUsed.name.toUpperCase()}!`
+          );
+          playerAttack();
+        }, 1000);
+        setTimeout(() => {
+          setAnnouncer(undefined);
+        }, 2000);
+      }
     }
   };
 
@@ -217,8 +255,12 @@ const GameScreen = () => {
   });
 
   if (!loading && currentHealth <= 0) {
+    setIsPokemonDead(true);
     setEnemyPokemon(undefined);
     setCurrentHealth(data.userById.pokemon[0].health);
+    setTimeout(() => {
+      setIsPokemonDead(false);
+    }, 1000);
   }
 
   useEffect(() => {
@@ -299,6 +341,7 @@ const GameScreen = () => {
 
     if (EnemyPokemon === undefined) {
       initializeEnemyPokemon();
+      setAnnouncer(undefined);
     }
   }, [createEnemy, EnemyPokemon]);
 
@@ -377,6 +420,7 @@ const GameScreen = () => {
               alt="Enemy Pokemon"
               className="absolute right-[160px] top-[235px] origin-bottom scale-[3] text-center"
             />
+
             {gameState == 0 && (
               <PlayerHealth
                 name={data && data.userById && data.userById.pokemon[0].name}
@@ -404,9 +448,15 @@ const GameScreen = () => {
                 setEnemyHealth={setEnemyHealth}
                 setEnemyPokemon={setEnemyPokemon}
                 setEnemyAttack={setEnemyAttack}
-                setEnemyDefense={setCurrentDefense}
+                setEnemyDefense={setEnemyDefense}
               />
             )}
+            <div
+              className={
+                "absolute top-0 h-full w-full bg-black transition " +
+                (isPokemonDead ? "opacity-1" : "opacity-0")
+              }
+            />
             {gameState == 0 && (
               <GameConsole
                 pokemonName={
@@ -419,6 +469,7 @@ const GameScreen = () => {
                 enemyMoves={EnemyPokemon && EnemyPokemon.moveset}
                 enemyData={EnemyPokemon}
                 handleAttack={handleAttack}
+                Announcer={Announcer}
               />
             )}
           </div>

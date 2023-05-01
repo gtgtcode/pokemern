@@ -27,8 +27,17 @@ const GameConsole = (props) => {
             enemyData={props.enemyData}
             enemyMoves={props.enemyMoves}
             handleAttack={props.handleAttack}
+            Announcer={props.Announcer}
           />
         </div>
+      </div>
+      <div
+        className={
+          "text-bold absolute left-1/2 top-1/2 h-[95%] w-[95%] -translate-x-1/2 -translate-y-1/2 border border-2 border-double border-black bg-white p-10 text-xl " +
+          (props.Announcer !== undefined ? "" : "hidden")
+        }
+      >
+        {props.Announcer !== undefined && props.Announcer}
       </div>
     </div>
   );

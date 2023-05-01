@@ -109,6 +109,7 @@ const PokemonSelection = ({ onNext }) => {
       variables: {
         id: userId,
         pokemon: [createdPokemon],
+        items: ["potion", "potion", "potion", "potion", "potion"],
       },
     });
 
