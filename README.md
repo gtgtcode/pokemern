@@ -12,6 +12,10 @@ PokeMERN is a Pokemon battle simulator made using NextJS and the PokeAPI.
 * PokéAPI (API used to create Pokémon)
 * Vercel (deployment)
 
+## Known Bugs
+
+* Enemy Pokemon creation sometimes causes an Apollo error with code 400. 
+
 ## Getting Started
 
 Go to the deployed site at https://pokemern.vercel.app/. Sign up for a new account with a username, email, and password. Select your gender, and then select your starter Pokemon.
