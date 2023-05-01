@@ -329,7 +329,7 @@ const GameScreen = () => {
       console.log(gen1NonEvolutions.length);
       const randomPokemon = await axios.get(
         `https://pokeapi.co/api/v2/pokemon/${
-          gen1NonEvolutions[Math.floor(Math.random() * 58)]
+          gen1NonEvolutions[Math.floor(Math.random() * 58)] || "pikachu"
         }/`
       );
       console.log(randomPokemon);
