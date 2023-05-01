@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const BattleMenu = (props) => {
+const BattleMenu = (props, { handleAttack }) => {
   const [BattleMenuState, setBattleMenuState] = useState("overview");
   const [MoveHover, setMoveHover] = useState(undefined);
   console.log(props.pokemonMoves);
@@ -32,6 +32,17 @@ const BattleMenu = (props) => {
           <div className="relative grid grid-cols-2 grid-rows-2 border-y-2 border-l-2 border-gray-600 bg-white">
             <div className="relative top-1/2 -translate-y-1/2 p-[15%] text-center">
               <button
+                onClick={() => {
+                  props.handleAttack(
+                    props.pokemonData.health,
+                    props.enemyData.health,
+                    props.pokemonData.moveset[0],
+                    props.enemyData.moveset,
+                    props.pokemonData,
+                    props.enemyData
+                  );
+                  setBattleMenuState("overview");
+                }}
                 onMouseEnter={() => {
                   setMoveHover(props.pokemonMoves[0]);
                 }}
@@ -53,6 +64,15 @@ const BattleMenu = (props) => {
             </div>
             <div className="relative top-1/2 -translate-y-1/2 p-[15%] text-center">
               <button
+                onClick={() => {
+                  props.handleAttack(
+                    props.pokemonData.health,
+                    props.enemyData,
+                    props.pokemonData.moveset[1],
+                    props.enemyData.moveset
+                  );
+                  setBattleMenuState("overview");
+                }}
                 onMouseEnter={() => {
                   setMoveHover(props.pokemonMoves[1]);
                 }}

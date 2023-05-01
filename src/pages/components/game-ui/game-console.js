@@ -23,7 +23,10 @@ const GameConsole = (props) => {
         <div className="relative left-1/2 top-1/2 h-[95%] w-[95%] -translate-x-1/2 -translate-y-1/2 bg-white">
           <BattleMenu
             pokemonMoves={props.pokemonMoves}
+            pokemonData={props.pokemonData}
+            enemyData={props.enemyData}
             enemyMoves={props.enemyMoves}
+            handleAttack={props.handleAttack}
           />
         </div>
       </div>

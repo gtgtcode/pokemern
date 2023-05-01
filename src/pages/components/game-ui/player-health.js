@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 
 const PlayerHealthBar = (props) => {
-  const [currentHealth, setcurrentHealth] = useState(props.health);
   return (
     <div className="absolute bottom-[200px] right-0 h-[90px] w-[250px] rounded-tl-[80px] bg-gray-200 p-4 pl-10">
       <h1 id="pokemon-name" className="inline">
@@ -12,7 +11,7 @@ const PlayerHealthBar = (props) => {
       </p>
       <br />
       <p id="health-amount" className="float-right">
-        {currentHealth}/{props.health}
+        {props.currentHealth}/{props.health}
       </p>
       <br />
       <div
@@ -27,7 +26,7 @@ const PlayerHealthBar = (props) => {
             "absolute -top-2 float-right mt-2 h-[10px] rounded-[2px] bg-green-400  transition"
           }
           style={{
-            width: `${(currentHealth / props.health) * 100}%`,
+            width: `${(props.currentHealth / props.health) * 100}%`,
             transiton: `width 2s`,
           }}
           id="player-health-bar"

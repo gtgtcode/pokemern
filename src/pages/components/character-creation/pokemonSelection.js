@@ -99,12 +99,19 @@ const PokemonSelection = ({ onNext }) => {
 
     console.log(createdPokemon);
 
+    // Save fullMoveset to localStorage
+    localStorage.setItem(
+      "fullMoveset",
+      JSON.stringify(createdPokemon.fullMoveset)
+    );
+
     const user = await updateUser({
       variables: {
         id: userId,
         pokemon: [createdPokemon],
       },
     });
+
     onNext();
   };
 

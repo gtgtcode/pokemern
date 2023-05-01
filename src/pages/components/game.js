@@ -9,8 +9,34 @@ const USER_POKEMON = gql`
       id
       username
       pokemon {
+        id
         name
+        types
+        sprites
         level
+        xp
+        max_xp
+        health
+        max_health
+        moveset {
+          name
+          type
+          power
+          accuracy
+          flavor_text
+          stat_changes {
+            change
+            stat {
+              name
+              url
+            }
+          }
+          current_pp
+          max_pp
+        }
+        attack
+        defense
+        speed
       }
     }
   }

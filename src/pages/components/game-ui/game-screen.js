@@ -13,6 +13,9 @@ const USER_INFO = gql`
       username
       money
       pokemon {
+        attack
+        defense
+        id
         name
         level
         sprites
@@ -80,13 +83,131 @@ const CREATE_ENEMY = gql`
   }
 `;
 
+const UPDATE_USER = gql`
+  mutation UpdateUser($id: ID!, $money: Int) {
+    updateUser(id: $id, money: $money) {
+      id
+      money
+    }
+  }
+`;
+
+const UPDATE_POKEMON = gql`
+  mutation UpdatePokemonXp($id: ID!, $xp: Int!) {
+    updatePokemon(id: $id, xp: $xp) {
+      id
+      xp
+    }
+  }
+`;
+
 const GameScreen = () => {
   const [gameState, setgameState] = useState(0); // 0 for overworld, 1 for battle
   const [userId, setUserId] = useState(null);
   const [pokemonAmount, setPokemonAmount] = useState(null);
   const [createEnemy] = useMutation(CREATE_ENEMY);
+  const [updateUser] = useMutation(UPDATE_USER);
+  const [updatePokemon] = useMutation(UPDATE_POKEMON);
   const [EnemyHealth, setEnemyHealth] = useState(undefined);
+  const [EnemyAttack, setEnemyAttack] = useState(undefined);
+  const [EnemyDefense, setEnemyDefense] = useState(undefined);
   const [EnemyPokemon, setEnemyPokemon] = useState(undefined);
+  const [currentHealth, setCurrentHealth] = useState(undefined);
+  const [currentAttack, setCurrentAttack] = useState(undefined);
+  const [currentDefense, setCurrentDefense] = useState(undefined);
+
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    setUserId(userId);
+  }, [userId]);
+
+  const handleAttack = async (
+    playerHealth,
+    enemyHealth,
+    moveUsed,
+    enemyMoveset,
+    pokemonData,
+    enemyData
+  ) => {
+    console.log(playerHealth);
+    console.log(enemyHealth);
+    console.log(enemyMoveset);
+    console.log(moveUsed);
+
+    console.log(pokemonData);
+
+    async function playerAttack() {
+      const newEnemyHealth =
+        EnemyHealth -
+        Math.floor(
+          moveUsed.power / 3 + pokemonData.attack / pokemonData.defense
+        );
+      setEnemyHealth(newEnemyHealth);
+      console.log(newEnemyHealth);
+
+      if (moveUsed.stat_changes[0].change !== 0) {
+        if (moveUsed.stat_changes[0].name == "attack") {
+          const newEnemyAttack = EnemyAttack + moveUsed.stat_changes[0].change;
+          setEnemyAttack(newEnemyAttack);
+        }
+        if (moveUsed.stat_changes[0].name == "defense") {
+          const newEnemyDefense =
+            EnemyDefense + moveUsed.stat_changes[0].change;
+          setEnemyAttack(newEnemyDefense);
+        }
+      }
+
+      if (newEnemyHealth <= 0) {
+        const { id, xp } = data.userById.pokemon[0];
+        const newMoney = data.userById.money + 20;
+        const newXP = xp + 30;
+        const fullMoveset = JSON.parse(localStorage.getItem("fullMoveset"));
+        console.log("newXP " + newXP);
+        const user = await updateUser({
+          variables: {
+            id: userId,
+            money: newMoney,
+            pokemon: {
+              id: data.userById.pokemon[0].id,
+              xp: newXP,
+            },
+          },
+        });
+      }
+    }
+
+    function enemyAttack() {
+      const enemyMoveUsed = enemyMoveset[Math.floor(Math.random() * 2)];
+      const newPlayerHealth =
+        currentHealth -
+        Math.floor(
+          enemyMoveUsed.power / 3 + enemyData.attack / enemyData.defense
+        );
+      setCurrentHealth(newPlayerHealth);
+      console.log(newPlayerHealth);
+
+      if (enemyMoveUsed.stat_changes[0].change !== 0) {
+        if (moveUsed.stat_changes[0].name == "attack") {
+          const newPokemonAttack =
+            currentAttack + moveUsed.stat_changes[0].change;
+          setCurrentAttack(newPokemonAttack);
+        }
+        if (enemyMoveUsed.stat_changes[0].name == "defense") {
+          const newPokemonDefense =
+            currentDefense + moveUsed.stat_changes[0].change;
+          setCurrentDefense(newPokemonDefense);
+        }
+      }
+    }
+
+    if (pokemonData && pokemonData.speed > enemyData.speed) {
+      playerAttack();
+      enemyAttack();
+    } else {
+      enemyAttack();
+      playerAttack();
+    }
+  };
 
   var initialized = false;
 
@@ -95,13 +216,13 @@ const GameScreen = () => {
     skip: !userId, // Skip the query if userId is not set
   });
 
+  if (!loading && currentHealth <= 0) {
+    setEnemyPokemon(undefined);
+    setCurrentHealth(data.userById.pokemon[0].health);
+  }
+
   useEffect(() => {
-    console.log(
-      `https://pokeapi.co/api/v2/pokemon/${Math.floor(
-        Math.random() * 152
-      ).toString()}/`
-    );
-    async function initializeEnemyPokemon() {
+    const initializeEnemyPokemon = async () => {
       initialized = false;
       setEnemyPokemon("a");
       const gen1NonEvolutions = [
@@ -174,7 +295,7 @@ const GameScreen = () => {
         variables: { pokemon: randomPokemon.data.name },
       });
       setEnemyPokemon(newEnemyPokemon.data.createPokemon);
-    }
+    };
 
     if (EnemyPokemon === undefined) {
       initializeEnemyPokemon();
@@ -192,6 +313,15 @@ const GameScreen = () => {
       if (loading || error || !data) return;
 
       const pokemonCount = data.userById.pokemon.length;
+      setCurrentHealth(
+        data && data.userById && data.userById.pokemon[0].health
+      );
+      setCurrentAttack(
+        data && data.userById && data.userById.pokemon[0].attack
+      );
+      setCurrentDefense(
+        data && data.userById && data.userById.pokemon[0].defense
+      );
       console.log(data.userById);
       console.log(pokemonCount);
 
@@ -260,6 +390,7 @@ const GameScreen = () => {
                 current_xp={
                   data && data.userById && data.userById.pokemon[0].xp
                 }
+                currentHealth={currentHealth}
               />
             )}
             {gameState == 0 && (
@@ -267,6 +398,13 @@ const GameScreen = () => {
                 name={EnemyPokemon && EnemyPokemon.name}
                 level={EnemyPokemon && EnemyPokemon.level}
                 health={EnemyPokemon && EnemyPokemon.health}
+                attack={EnemyPokemon && EnemyPokemon.attack}
+                defense={EnemyPokemon && EnemyPokemon.defense}
+                EnemyHealth={EnemyHealth}
+                setEnemyHealth={setEnemyHealth}
+                setEnemyPokemon={setEnemyPokemon}
+                setEnemyAttack={setEnemyAttack}
+                setEnemyDefense={setCurrentDefense}
               />
             )}
             {gameState == 0 && (
@@ -277,7 +415,10 @@ const GameScreen = () => {
                 pokemonMoves={
                   data && data.userById && data.userById.pokemon[0].moveset
                 }
+                pokemonData={data && data.userById && data.userById.pokemon[0]}
                 enemyMoves={EnemyPokemon && EnemyPokemon.moveset}
+                enemyData={EnemyPokemon}
+                handleAttack={handleAttack}
               />
             )}
           </div>

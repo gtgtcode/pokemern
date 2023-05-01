@@ -180,7 +180,7 @@ type User {
   username: String!
   email: String!
   createdAt: Date!
-  pokemon: [Pokemon]!
+  pokemon: [Pokemon]
   money: Int!
   items: [String]!
   pc: [String]!

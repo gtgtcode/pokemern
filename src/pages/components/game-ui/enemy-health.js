@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
 
 const EnemyHealth = (props) => {
-  const [currentHealth, setcurrentHealth] = useState(props.health);
-  console.log(currentHealth);
-
   useEffect(() => {
-    setcurrentHealth(props.health);
+    props.setEnemyHealth(props.health);
+    props.setEnemyAttack(props.attack);
+    props.setEnemyDefense(props.defense);
   }, [props.health]);
+
+  if (props.EnemyHealth <= 0) {
+    props.setEnemyPokemon(undefined);
+  }
 
   return (
     <div className="absolute left-0 top-[100px] h-[90px] w-[250px] rounded-tr-[80px] bg-gray-200 p-4 pr-10">
@@ -18,7 +21,7 @@ const EnemyHealth = (props) => {
       </p>
       <br />
       <p id="health-amount" className="float-right pr-4">
-        {currentHealth}/{props.health}
+        {props.EnemyHealth}/{props.health}
       </p>
       <br />
       <div
@@ -33,7 +36,7 @@ const EnemyHealth = (props) => {
             "absolute -top-2 float-right mt-2 h-[10px] rounded-[2px] bg-green-400"
           }
           style={{
-            width: `${(currentHealth / props.health) * 100}%`,
+            width: `${(props.EnemyHealth / props.health) * 100}%`,
             transiton: `width 2s`,
           }}
           id="enemy-health-bar"
