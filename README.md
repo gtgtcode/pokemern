@@ -14,7 +14,8 @@ PokeMERN is a Pokemon battle simulator made using NextJS and the PokeAPI.
 
 ## Known Bugs
 
-* Enemy Pokemon creation sometimes causes an Apollo error with code 400. 
+* Enemy Pokemon creation sometimes causes an Apollo error with code 400.
+* Pokemon sometimes attack after they faint.
 
 ## Getting Started
 
